@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Mẫu website bán hoa tươi với danh mục, bộ lọc sản phẩm và giỏ hàng."
+    />
+    <title>Linh Florist | Hoa tươi trao trọn yêu thương</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="announcement">
+      <p>Miễn phí giao hàng nội thành cho đơn từ 800.000đ</p>
+      <button type="button" aria-label="Đóng thông báo" data-close-announcement>×</button>
+    </div>
+
+    <header class="site-header">
+      <div class="header-main page-shell">
+        <button class="icon-button mobile-menu-button" type="button" aria-label="Mở menu" data-menu-toggle>
+          <span></span><span></span><span></span>
+        </button>
+
+        <a class="brand" href="#" aria-label="Linh Florist - Trang chủ">
+          <span class="brand-mark">ℒ</span>
+          <span class="brand-name">Linh Florist</span>
+          <span class="brand-tagline">Flowers for every feeling</span>
+        </a>
+
+        <form class="header-search" data-search-form>
+          <label class="sr-only" for="site-search">Tìm kiếm sản phẩm</label>
+          <input id="site-search" type="search" placeholder="Tìm hoa theo tên, màu sắc..." autocomplete="off" />
+          <button type="submit" aria-label="Tìm kiếm">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3m2.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" /></svg>
+          </button>
+        </form>
+
+        <div class="header-actions">
+          <a class="header-action hotline-action" href="tel:0981028774">
+            <span class="action-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.4 3.5 10 7.2 7.8 9a15 15 0 0 0 7.1 7.1l1.8-2.2 3.8 1.6v2.8a2.2 2.2 0 0 1-2.4 2.2C10.5 19.7 4.3 13.5 3.5 5.9A2.2 2.2 0 0 1 5.7 3.5h2.7Z" /></svg>
+            </span>
+            <span><small>Tư vấn đặt hoa</small><strong>0981 028 774</strong></span>
+          </a>
+          <div class="guest-auth-actions" data-guest-auth>
+            <a href="login.php">Đăng nhập</a>
+            <a class="register-link" href="register.php">Đăng ký</a>
+          </div>
+          <a class="header-action account-button" href="account.php" data-account-link hidden>
+            <span class="action-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg>
+            </span>
+            <span><small data-account-greeting>Xin chào</small><strong data-account-label>Tài khoản</strong></span>
+          </a>
+          <button class="header-action cart-button" type="button" data-cart-open>
+            <span class="action-icon cart-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 13H6L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+              <span class="cart-count" data-cart-count>0</span>
+            </span>
+            <span><small>Giỏ hàng</small><strong data-cart-total>0đ</strong></span>
+          </button>
+        </div>
+      </div>
+
+      <nav class="category-nav" aria-label="Danh mục chính">
+        <div class="page-shell category-nav-inner">
+          <a href="#products" data-occasion="all">Tất cả</a>
+          <a href="#products" data-occasion="birthday">Hoa sinh nhật</a>
+          <a href="#products" data-occasion="love">Hoa tình yêu</a>
+          <a href="#products" data-occasion="congratulations">Hoa chúc mừng</a>
+          <a href="#products" data-occasion="bouquet">Bó hoa</a>
+          <a href="#products" data-occasion="basket">Giỏ hoa</a>
+          <a href="#products" data-occasion="wedding">Hoa cưới</a>
+          <a href="#products" data-occasion="seasonal">Hoa theo mùa</a>
+          <a class="nav-highlight" href="#products" data-occasion="sale">Khuyến mãi</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="collection-hero home-hero">
+        <div class="collection-hero-art art-one"></div>
+        <div class="collection-hero-art art-two"></div>
+        <div class="page-shell home-hero-grid">
+          <div class="collection-hero-content">
+            <p class="eyebrow">Hoa tươi thiết kế mỗi ngày</p>
+            <h1>Gửi một bó hoa,<br /><em>trao trọn cảm xúc.</em></h1>
+            <p>Những thiết kế hoa tinh tế cho sinh nhật, kỷ niệm và mọi khoảnh khắc bạn muốn nói lời yêu thương.</p>
+            <div class="hero-actions">
+              <a class="hero-primary" href="#products">Khám phá bộ sưu tập</a>
+              <a class="hero-secondary" href="tel:0981028774">Tư vấn chọn hoa</a>
+            </div>
+            <div class="hero-trust"><span>Hoa tươi chọn lọc</span><span>Giao đúng hẹn</span><span>Thiết kế theo yêu cầu</span></div>
+          </div>
+          <div class="hero-visual" aria-hidden="true">
+            <div class="hero-image-card"><img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1000&q=88" alt="" /></div>
+            <div class="hero-note"><strong>Florist's choice</strong><span>Được thiết kế riêng cho từng lời nhắn</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="featured-categories page-shell" aria-labelledby="category-heading">
+        <div class="section-heading">
+          <div><p class="eyebrow">Chọn hoa theo cảm xúc</p><h2 id="category-heading">Danh mục được yêu thích</h2></div>
+          <a href="#products">Xem tất cả mẫu hoa</a>
+        </div>
+        <div class="category-showcase">
+          <a href="#products" data-occasion="birthday"><span class="category-art category-birthday">01</span><strong>Hoa sinh nhật</strong><small>Rực rỡ và ngọt ngào</small></a>
+          <a href="#products" data-occasion="love"><span class="category-art category-love">02</span><strong>Hoa tình yêu</strong><small>Thay lời muốn nói</small></a>
+          <a href="#products" data-occasion="congratulations"><span class="category-art category-congrats">03</span><strong>Hoa chúc mừng</strong><small>Trang trọng và tinh tế</small></a>
+          <a href="#products" data-occasion="seasonal"><span class="category-art category-season">04</span><strong>Hoa theo mùa</strong><small>Tươi mới mỗi ngày</small></a>
+        </div>
+      </section>
+
+      <div class="page-shell breadcrumb" aria-label="Đường dẫn">
+        <a href="#">Trang chủ</a><span>/</span><span>Hoa tươi</span><span>/</span><strong>Hoa Tulip</strong>
+      </div>
+
+      <section class="shop-layout page-shell" id="products">
+        <button class="mobile-filter-button" type="button" data-filter-open>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4" /></svg>
+          Bộ lọc sản phẩm
+        </button>
+
+        <aside class="filters" data-filters>
+          <div class="filter-heading">
+            <h2>Bộ lọc</h2>
+            <button type="button" data-clear-filters>Xóa tất cả</button>
+            <button class="filter-close" type="button" aria-label="Đóng bộ lọc" data-filter-close>×</button>
+          </div>
+
+          <div class="filter-group">
+            <button class="filter-group-title" type="button" aria-expanded="true">
+              Loại hoa <span>+</span>
+            </button>
+            <div class="filter-options" data-category-filters></div>
+          </div>
+
+          <div class="filter-group">
+            <button class="filter-group-title" type="button" aria-expanded="true">
+              Màu sắc <span>+</span>
+            </button>
+            <div class="filter-options color-options" data-color-filters></div>
+          </div>
+
+          <div class="filter-group">
+            <button class="filter-group-title" type="button" aria-expanded="true">
+              Khoảng giá <span>+</span>
+            </button>
+            <div class="filter-options">
+              <label><input type="radio" name="price" value="all" checked /> <span>Tất cả mức giá</span></label>
+              <label><input type="radio" name="price" value="under-500" /> <span>Dưới 500.000đ</span></label>
+              <label><input type="radio" name="price" value="500-1000" /> <span>500.000đ - 1.000.000đ</span></label>
+              <label><input type="radio" name="price" value="over-1000" /> <span>Trên 1.000.000đ</span></label>
+            </div>
+          </div>
+
+          <div class="filter-help">
+            <span>♡</span>
+            <h3>Cần tư vấn chọn hoa?</h3>
+            <p>Florist của chúng tôi sẽ giúp bạn chọn mẫu phù hợp.</p>
+            <a href="tel:0981028774">Gọi 0981 028 774</a>
+          </div>
+        </aside>
+
+        <div class="shop-content">
+          <div class="collection-toolbar">
+            <div>
+              <p class="eyebrow">Thiết kế tại florist</p>
+              <h2 data-collection-title>Bộ sưu tập hoa tươi</h2>
+              <p class="catalog-status" data-catalog-status hidden>Đang hiển thị dữ liệu mẫu do chưa kết nối được database.</p>
+              <p class="results-count"><strong data-result-count>0</strong> sản phẩm</p>
+            </div>
+            <label class="sort-control">
+              <span>Sắp xếp</span>
+              <select data-sort>
+                <option value="featured">Nổi bật</option>
+                <option value="price-asc">Giá tăng dần</option>
+                <option value="price-desc">Giá giảm dần</option>
+                <option value="name-asc">Tên A - Z</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="active-filters" data-active-filters></div>
+          <div class="product-grid" data-product-grid></div>
+          <div class="empty-state" data-empty-state hidden>
+            <span>✿</span>
+            <h3 data-empty-title>Chưa tìm thấy mẫu hoa phù hợp</h3>
+            <p data-empty-message>Hãy thử bỏ bớt bộ lọc hoặc tìm bằng từ khóa khác.</p>
+            <button type="button" data-clear-filters>Xem tất cả sản phẩm</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-section">
+        <div class="page-shell story-grid">
+          <div class="story-visual"><span>Since 2026</span></div>
+          <div class="story-copy"><p class="eyebrow">Câu chuyện của Linh Florist</p><h2>Mỗi bó hoa là một lời nhắn được chăm chút.</h2><p>Chúng tôi chọn hoa theo mùa, phối màu nhẹ nhàng và hoàn thiện từng thiết kế ngay trước giờ giao. Mỗi đơn hoa đều có thể điều chỉnh để phù hợp với người nhận và dịp đặc biệt của bạn.</p><a href="tel:0981028774">Trò chuyện cùng florist</a></div>
+        </div>
+      </section>
+
+      <section class="service-strip">
+        <div class="page-shell service-grid">
+          <article><span>01</span><div><h3>Hoa tươi mỗi ngày</h3><p>Tuyển chọn và thiết kế ngay khi bạn đặt.</p></div></article>
+          <article><span>02</span><div><h3>Giao hoa đúng hẹn</h3><p>Hỗ trợ giao nhanh trong ngày tại nội thành.</p></div></article>
+          <article><span>03</span><div><h3>Thiết kế theo yêu cầu</h3><p>Tùy chỉnh màu sắc, thiệp và thông điệp riêng.</p></div></article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-shell footer-grid">
+        <div class="footer-brand">
+          <a class="brand brand-light" href="#">
+            <span class="brand-mark">ℒ</span>
+            <span class="brand-name">Linh Florist</span>
+            <span class="brand-tagline">Flowers for every feeling</span>
+          </a>
+          <p>Mỗi bó hoa là một lời nhắn được gói ghém bằng sự tinh tế và tận tâm.</p>
+        </div>
+        <div><h3>Khám phá</h3><a href="#products">Hoa sinh nhật</a><a href="#products">Hoa tình yêu</a><a href="#products">Hoa chúc mừng</a><a href="#products">Hoa cưới</a></div>
+        <div><h3>Hỗ trợ</h3><a href="#">Hướng dẫn đặt hoa</a><a href="#">Chính sách giao hàng</a><a href="#">Chính sách đổi trả</a><a href="#">Liên hệ</a></div>
+        <div class="newsletter"><h3>Nhận cảm hứng mới</h3><p>Đăng ký để nhận bộ sưu tập và ưu đãi mới nhất.</p><form><input type="email" placeholder="Email của bạn" aria-label="Email của bạn" /><button type="submit">Đăng ký</button></form></div>
+      </div>
+      <div class="page-shell footer-bottom"><span>© 2026 Linh Florist</span><span>Thiết kế mẫu website bán hoa</span></div>
+    </footer>
+
+    <div class="overlay" data-overlay></div>
+
+    <aside class="cart-drawer" aria-hidden="true" data-cart-drawer>
+      <div class="cart-drawer-header">
+        <div><p class="eyebrow">Linh Florist</p><h2>Giỏ hoa của bạn</h2></div>
+        <button type="button" aria-label="Đóng giỏ hàng" data-cart-close>×</button>
+      </div>
+      <div class="cart-items" data-cart-items></div>
+      <div class="cart-empty" data-cart-empty>
+        <span>♡</span><h3>Giỏ hàng đang trống</h3><p>Chọn một bó hoa để bắt đầu nhé.</p>
+      </div>
+      <div class="cart-footer">
+        <div><span>Tạm tính</span><strong data-drawer-total>0đ</strong></div>
+        <p class="cart-loyalty-hint" data-loyalty-login-hint hidden>Đăng nhập để sử dụng điểm thưởng khi thanh toán.</p>
+        <button type="button" data-checkout>Tiến hành đặt hoa</button>
+      </div>
+    </aside>
+
+    <nav class="mobile-nav" aria-hidden="true" data-mobile-nav>
+      <div class="mobile-nav-header"><span>Danh mục</span><button type="button" aria-label="Đóng menu" data-menu-close>×</button></div>
+      <a href="#products" data-occasion="all">Tất cả sản phẩm</a><a href="#products" data-occasion="birthday">Hoa sinh nhật</a><a href="#products" data-occasion="love">Hoa tình yêu</a><a href="#products" data-occasion="congratulations">Hoa chúc mừng</a><a href="#products" data-occasion="bouquet">Bó hoa</a><a href="#products" data-occasion="basket">Giỏ hoa</a><a href="#products" data-occasion="wedding">Hoa cưới</a><a href="#products" data-occasion="seasonal">Hoa theo mùa</a><a class="nav-highlight" href="#products" data-occasion="sale">Khuyến mãi</a><a href="login.php" data-mobile-login>Đăng nhập</a><a href="register.php" data-mobile-register>Đăng ký</a><a href="account.php" data-mobile-account-link hidden>Tài khoản</a>
+    </nav>
+
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+    <script src="catalog.js?v=20260613-menu"></script>
+    <script src="script.js?v=20260613-menu"></script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+<?php
+declare(strict_types=1);
+if (!isset($renderAdminView)) {
+    require __DIR__ . "/../app/bootstrap.php";
+    (new App\Controllers\AdminController())->products();
+    return;
+}
+require __DIR__ . "/../includes/admin-header.php";
+?>
+<section class="admin-page-heading"><div><p class="eyebrow">Catalog management</p><h1>Sản phẩm</h1><p>Thêm, sửa, xóa, ẩn và theo dõi tồn kho hoa.</p></div><a class="admin-primary" href="product-form.php">+ Thêm sản phẩm</a></section>
+<form class="admin-filters" method="get"><input name="q" value="<?= h($q) ?>" placeholder="Tìm theo tên hoặc mã sản phẩm"><select name="category_id"><option value="0">Tất cả danh mục</option><?php foreach ($categories as $category): ?><option value="<?= (int) $category['id'] ?>" <?= $categoryId === (int) $category['id'] ? 'selected' : '' ?>><?= h($category['name']) ?></option><?php endforeach; ?></select><select name="status"><option value="">Mọi trạng thái</option><option value="active" <?= $status === 'active' ? 'selected' : '' ?>>Đang bán</option><option value="hidden" <?= $status === 'hidden' ? 'selected' : '' ?>>Đang ẩn</option><option value="draft" <?= $status === 'draft' ? 'selected' : '' ?>>Bản nháp</option></select><button class="admin-secondary" type="submit">Lọc</button><a class="admin-secondary" href="products.php">Xóa lọc</a></form>
+<section class="admin-card"><header class="admin-card-header"><div><h2>Danh sách sản phẩm</h2><p><?= count($products) ?> sản phẩm phù hợp</p></div></header>
+<?php if ($products): ?><div class="admin-table-wrap"><table class="admin-data-table"><thead><tr><th>Sản phẩm</th><th>Danh mục</th><th>Giá bán</th><th>Tồn kho</th><th>Trạng thái</th><th>Cập nhật</th><th>Thao tác</th></tr></thead><tbody>
+<?php foreach ($products as $product): $image = $product['image_url'] ?: '../images/placeholder.jpg'; if (!preg_match('#^https?://#', $image)) $image = '../' . ltrim($image, '/'); ?>
+<tr><td><div class="admin-product-cell"><img src="<?= h($image) ?>" alt=""><div><strong><?= h($product['name']) ?></strong><small><?= h($product['sku']) ?> · <?= h($product['color'] ?: 'Chưa có màu') ?></small></div></div></td><td><?= h($product['category_name'] ?: 'Chưa phân loại') ?></td><td><strong><?= admin_money($product['price']) ?></strong><?php if ((int) $product['compare_price'] > (int) $product['price']): ?><small><s><?= admin_money($product['compare_price']) ?></s></small><?php endif; ?></td><td><strong><?= (int) $product['stock_quantity'] ?></strong><small><?= (int) $product['stock_quantity'] <= 5 ? 'Cần nhập thêm' : 'Còn hàng' ?></small></td><td><span class="admin-status <?= h($product['status']) ?>"><?= h(admin_status_label($product['status'])) ?></span></td><td><?= admin_date($product['updated_at'], true) ?></td><td><div class="admin-actions"><a href="product-form.php?id=<?= (int) $product['id'] ?>">Sửa</a><form method="post"><?= csrf_field() ?><input type="hidden" name="action" value="toggle"><input type="hidden" name="id" value="<?= (int) $product['id'] ?>"><input type="hidden" name="status" value="<?= $product['status'] === 'active' ? 'hidden' : 'active' ?>"><button type="submit"><?= $product['status'] === 'active' ? 'Ẩn' : 'Hiện' ?></button></form><form method="post" data-confirm="Xóa sản phẩm này? Hành động không thể hoàn tác."><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int) $product['id'] ?>"><button class="danger" type="submit">Xóa</button></form></div></td></tr>
+<?php endforeach; ?></tbody></table></div><?php else: ?><div class="admin-empty">Không tìm thấy sản phẩm phù hợp.</div><?php endif; ?>
+</section>
+<?php require __DIR__ . '/../includes/admin-footer.php'; ?>

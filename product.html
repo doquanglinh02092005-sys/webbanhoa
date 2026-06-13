@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Chi tiết sản phẩm hoa tươi tại Linh Florist." />
+    <title>Chi tiết sản phẩm | Linh Florist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="announcement">
+      <p>Miễn phí giao hàng nội thành cho đơn từ 800.000đ</p>
+      <button type="button" aria-label="Đóng thông báo" data-close-announcement>×</button>
+    </div>
+
+    <header class="site-header">
+      <div class="header-main page-shell">
+        <button class="icon-button mobile-menu-button" type="button" aria-label="Mở menu" data-menu-toggle><span></span><span></span><span></span></button>
+        <a class="brand" href="index.html" aria-label="Linh Florist - Trang chủ">
+          <span class="brand-mark">ℒ</span><span class="brand-name">Linh Florist</span><span class="brand-tagline">Flowers for every feeling</span>
+        </a>
+        <form class="header-search" data-detail-search>
+          <label class="sr-only" for="detail-search">Tìm kiếm sản phẩm</label>
+          <input id="detail-search" type="search" placeholder="Tìm hoa theo tên, màu sắc..." autocomplete="off" />
+          <button type="submit" aria-label="Tìm kiếm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3m2.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" /></svg></button>
+        </form>
+        <div class="header-actions">
+          <a class="header-action hotline-action" href="tel:0981028774"><span class="action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.4 3.5 10 7.2 7.8 9a15 15 0 0 0 7.1 7.1l1.8-2.2 3.8 1.6v2.8a2.2 2.2 0 0 1-2.4 2.2C10.5 19.7 4.3 13.5 3.5 5.9A2.2 2.2 0 0 1 5.7 3.5h2.7Z" /></svg></span><span><small>Tư vấn đặt hoa</small><strong>0981 028 774</strong></span></a>
+          <div class="guest-auth-actions" data-guest-auth><a href="login.php">Đăng nhập</a><a class="register-link" href="register.php">Đăng ký</a></div>
+          <a class="header-action account-button" href="account.php" data-account-link hidden><span class="action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></svg></span><span><small data-account-greeting>Xin chào</small><strong data-account-label>Tài khoản</strong></span></a>
+          <button class="header-action cart-button" type="button" data-cart-open><span class="action-icon cart-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 13H6L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg><span class="cart-count" data-cart-count>0</span></span><span><small>Giỏ hàng</small><strong data-cart-total>0đ</strong></span></button>
+        </div>
+      </div>
+      <nav class="category-nav" aria-label="Danh mục chính"><div class="page-shell category-nav-inner"><a href="index.html#products">Hoa sinh nhật</a><a href="index.html#products">Hoa tình yêu</a><a href="index.html#products">Hoa chúc mừng</a><a href="index.html#products">Bó hoa</a><a href="index.html#products">Giỏ hoa</a><a href="index.html#products">Hoa cưới</a><a href="index.html#products">Hoa theo mùa</a><a class="nav-highlight" href="index.html#products">Khuyến mãi</a></div></nav>
+    </header>
+
+    <main>
+      <div class="page-shell breadcrumb product-breadcrumb" aria-label="Đường dẫn">
+        <a href="index.html">Trang chủ</a><span>/</span><a href="index.html#products">Hoa tươi</a><span>/</span><strong data-breadcrumb-name>Sản phẩm</strong>
+      </div>
+
+      <section class="product-detail page-shell">
+        <div class="product-gallery">
+          <div class="detail-main-image"><span class="product-badge" data-detail-badge>Mới</span><img data-detail-image src="" alt="" /></div>
+          <div class="detail-thumbnails" aria-label="Ảnh sản phẩm">
+            <button class="active" type="button"><img data-detail-thumb src="" alt="Ảnh sản phẩm" /></button>
+            <button class="detail-color-card" type="button" aria-label="Màu sắc bó hoa"><span data-detail-color></span><small>Màu chủ đạo</small></button>
+          </div>
+        </div>
+
+        <div class="product-detail-info">
+          <p class="eyebrow" data-detail-category>Hoa tươi</p>
+          <div class="detail-title-row"><h1 data-detail-name>Sản phẩm</h1><button class="detail-wishlist" type="button" aria-label="Thêm vào yêu thích" data-detail-wishlist>♡</button></div>
+          <div class="detail-rating"><span>★★★★★</span><small>5.0 · 18 đánh giá</small></div>
+          <div class="detail-price"><strong data-detail-price>0đ</strong><del data-detail-compare>0đ</del><span data-saving></span></div>
+          <div class="detail-stock" data-detail-stock>Đang kiểm tra tình trạng hoa...</div>
+          <p class="detail-description">Bó hoa được florist thiết kế theo phong cách Hàn Quốc nhẹ nhàng, phù hợp để tặng sinh nhật, kỷ niệm hoặc gửi một lời thương thật tinh tế.</p>
+
+          <div class="detail-notice"><span>✿</span><p><strong>Hoa tươi theo mùa</strong>Mỗi bó hoa có thể chênh lệch nhẹ nhưng vẫn giữ đúng tông màu và giá trị.</p></div>
+
+          <div class="detail-field"><label for="delivery-date">Ngày bạn muốn giao hoa</label><input id="delivery-date" type="date" data-delivery-date /></div>
+          <div class="detail-field"><label for="card-message">Lời nhắn trên thiệp <small>(không bắt buộc)</small></label><textarea id="card-message" rows="3" maxlength="180" placeholder="Ví dụ: Chúc em một ngày thật rực rỡ..." data-card-message></textarea><small class="character-count"><span data-message-count>0</span>/180</small></div>
+
+          <div class="detail-purchase-label"><span>Số lượng</span><small>Florist sẽ liên hệ xác nhận trước khi giao</small></div>
+          <div class="detail-purchase-row">
+            <div class="quantity-control" aria-label="Số lượng"><button type="button" data-quantity-minus>−</button><input type="number" min="1" max="20" value="1" aria-label="Số lượng" data-quantity /><button type="button" data-quantity-plus>+</button></div>
+            <button class="detail-add-cart" type="button" data-detail-add>Thêm vào giỏ</button>
+          </div>
+          <button class="detail-buy-now" type="button" data-buy-now>Đặt hoa ngay</button>
+
+          <div class="detail-perks"><p><span>✓</span> Tặng thiệp viết tay theo yêu cầu</p><p><span>✓</span> Gửi ảnh hoa thật trước khi giao</p><p><span>✓</span> Hỗ trợ giao nhanh trong ngày</p></div>
+
+          <div class="detail-accordions">
+            <div class="detail-accordion"><button type="button" aria-expanded="true">Mô tả sản phẩm <span>+</span></button><div><p>Thiết kế gồm hoa tươi chọn lọc, lá phụ và giấy gói cao cấp. Kích thước thành phẩm khoảng 35–45 cm.</p></div></div>
+            <div class="detail-accordion"><button type="button" aria-expanded="false">Hướng dẫn bảo quản <span>+</span></button><div hidden><p>Giữ hoa ở nơi mát, tránh nắng trực tiếp. Cắt chéo gốc và thay nước sạch mỗi ngày.</p></div></div>
+            <div class="detail-accordion"><button type="button" aria-expanded="false">Chính sách giao hoa <span>+</span></button><div hidden><p>Florist sẽ liên hệ xác nhận đơn và thời gian giao. Phí giao hàng phụ thuộc khu vực nhận hoa.</p></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="related-products page-shell">
+        <div class="related-heading"><div><p class="eyebrow">Có thể bạn sẽ thích</p><h2>Những mẫu hoa khác</h2></div><a href="index.html#products">Xem tất cả →</a></div>
+        <div class="product-grid related-grid" data-related-products></div>
+      </section>
+
+      <section class="service-strip"><div class="page-shell service-grid"><article><span>01</span><div><h3>Hoa tươi mỗi ngày</h3><p>Tuyển chọn và thiết kế ngay khi bạn đặt.</p></div></article><article><span>02</span><div><h3>Giao hoa đúng hẹn</h3><p>Hỗ trợ giao nhanh trong ngày tại nội thành.</p></div></article><article><span>03</span><div><h3>Thiết kế theo yêu cầu</h3><p>Tùy chỉnh màu sắc, thiệp và thông điệp riêng.</p></div></article></div></section>
+    </main>
+
+    <footer class="site-footer"><div class="page-shell footer-grid"><div class="footer-brand"><a class="brand brand-light" href="index.html"><span class="brand-mark">ℒ</span><span class="brand-name">Linh Florist</span><span class="brand-tagline">Flowers for every feeling</span></a><p>Mỗi bó hoa là một lời nhắn được gói ghém bằng sự tinh tế và tận tâm.</p></div><div><h3>Khám phá</h3><a href="index.html#products">Hoa sinh nhật</a><a href="index.html#products">Hoa tình yêu</a><a href="index.html#products">Hoa chúc mừng</a><a href="index.html#products">Hoa cưới</a></div><div><h3>Hỗ trợ</h3><a href="#">Hướng dẫn đặt hoa</a><a href="#">Chính sách giao hàng</a><a href="#">Chính sách đổi trả</a><a href="#">Liên hệ</a></div><div class="newsletter"><h3>Nhận cảm hứng mới</h3><p>Đăng ký để nhận bộ sưu tập và ưu đãi mới nhất.</p><form><input type="email" placeholder="Email của bạn" aria-label="Email của bạn" /><button type="submit">Đăng ký</button></form></div></div><div class="page-shell footer-bottom"><span>© 2026 Linh Florist</span><span>Thiết kế mẫu website bán hoa</span></div></footer>
+
+    <div class="overlay" data-overlay></div>
+    <aside class="cart-drawer" aria-hidden="true" data-cart-drawer><div class="cart-drawer-header"><div><p class="eyebrow">Linh Florist</p><h2>Giỏ hoa của bạn</h2></div><button type="button" aria-label="Đóng giỏ hàng" data-cart-close>×</button></div><div class="cart-items" data-cart-items></div><div class="cart-empty" data-cart-empty><span>♡</span><h3>Giỏ hàng đang trống</h3><p>Chọn một bó hoa để bắt đầu nhé.</p></div><div class="cart-footer"><div><span>Tạm tính</span><strong data-drawer-total>0đ</strong></div><button type="button" data-checkout>Tiến hành đặt hoa</button></div></aside>
+    <nav class="mobile-nav" aria-hidden="true" data-mobile-nav><div class="mobile-nav-header"><span>Danh mục</span><button type="button" aria-label="Đóng menu" data-menu-close>×</button></div><a href="index.html#products">Hoa sinh nhật</a><a href="index.html#products">Hoa tình yêu</a><a href="index.html#products">Hoa chúc mừng</a><a href="index.html#products">Bó hoa</a><a href="index.html#products">Giỏ hoa</a><a href="index.html#products">Hoa cưới</a><a href="index.html#products">Hoa theo mùa</a><a class="nav-highlight" href="index.html#products">Khuyến mãi</a><a href="login.php" data-mobile-login>Đăng nhập</a><a href="register.php" data-mobile-register>Đăng ký</a><a href="account.php" data-mobile-account-link hidden>Tài khoản</a></nav>
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+    <script src="catalog.js"></script>
+    <script src="product.js"></script>
+  </body>
+</html>
