@@ -1,6 +1,20 @@
 const successOrder = document.querySelector("[data-checkout-success]")?.dataset.checkoutSuccess;
 if (successOrder) localStorage.removeItem("linh-florist-cart");
 
+document.querySelectorAll("[data-copy-value]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const value = button.dataset.copyValue || "";
+    try {
+      await navigator.clipboard.writeText(value);
+      const original = button.textContent;
+      button.textContent = "Đã copy";
+      setTimeout(() => { button.textContent = original; }, 1600);
+    } catch {
+      button.textContent = "Hãy copy thủ công";
+    }
+  });
+});
+
 const form = document.querySelector("[data-checkout-form]");
 if (form) {
   let cart = [];
@@ -58,8 +72,8 @@ if (form) {
   }
 
   const updateSubmitLabel = () => {
-    submit.textContent = document.querySelector('input[name="payment_method"]:checked')?.value === "momo"
-      ? "Thanh toán qua MoMo"
+    submit.textContent = document.querySelector('input[name="payment_method"]:checked')?.value === "bank_transfer"
+      ? "Đặt hàng và xem thông tin chuyển khoản"
       : "Xác nhận đặt hoa";
   };
   document.querySelectorAll('input[name="payment_method"]').forEach((input) => input.addEventListener("change", updateSubmitLabel));

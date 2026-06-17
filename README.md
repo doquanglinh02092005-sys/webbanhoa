@@ -53,14 +53,25 @@ Co the thay doi bang cac bien moi truong `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_US
 - Neu don bi huy hoac hoan tien, diem cua don duoc thu hoi tu dong.
 - Doi ty le bang `loyalty_vnd_per_point` trong `config/local.php` hoac bien moi truong `LOYALTY_VND_PER_POINT`.
 
-## Thanh toan COD va MoMo
+## Thanh toan COD va chuyen khoan ngan hang
 
-COD hoat dong ngay. De bat MoMo sandbox:
+Checkout hien dung 2 phuong thuc:
 
-1. Sao chep `config/local.example.php` thanh `config/local.php`.
-2. Dien `partner_code`, `access_key`, `secret_key` do MoMo Business cap.
-3. Dien `app_url` la URL HTTPS cong khai tro den website. MoMo khong the gui IPN den `localhost`.
-4. Giu endpoint sandbox `https://test-payment.momo.vn` khi kiem thu.
-5. Khi MoMo duyet production, doi endpoint thanh `https://payment.momo.vn` va dung bo khoa production.
+- `cod`: khach thanh toan khi nhan hang.
+- `bank_transfer`: khach dat hang truoc, sau do chuyen khoan thu cong.
 
-Khong commit `config/local.php` vi file nay chua Secret Key.
+Thong tin chuyen khoan hien thi sau khi tao don:
+
+```text
+Ngan hang: MB Bank
+So tai khoan: 0981028774
+Chu tai khoan: Do Quang Linh
+Noi dung chuyen khoan: ma don hang
+```
+
+Admin kiem tra tai khoan ngan hang roi cap nhat `payment_status` sang `paid`
+trong chi tiet don hang. Diem thuong chi duoc cong khi don hang `completed`
+va `paid`.
+
+Mot so file MoMo sandbox cu van duoc giu lai de tranh xoa manh gay loi, nhung
+checkout khong con hien thi hoac goi MoMo nua.

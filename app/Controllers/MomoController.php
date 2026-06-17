@@ -10,6 +10,46 @@ use Throwable;
 
 final class MomoController extends Controller
 {
+    public function demo(): void
+    {
+        $user = require_login();
+        $momoOrderId = trim((string) ($_GET['order'] ?? $_POST['order'] ?? ''));
+        $requestId = trim((string) ($_GET['request'] ?? $_POST['request'] ?? ''));
+        $orders = new Order();
+        $error = '';
+
+        if (!momo_config()['demo_enabled']) {
+            http_response_code(404);
+            $error = 'Phương thức thanh toán MoMo đang tắt.';
+            $order = null;
+        } else {
+            $order = $orders->findMomoDemo($momoOrderId, $requestId, (int) $user['id']);
+            if (!$order) {
+                http_response_code(404);
+                $error = 'Không tìm thấy đơn thanh toán MoMo tương ứng.';
+            } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                verify_csrf();
+                $order = $orders->confirmMomoDemo($momoOrderId, $requestId, (int) $user['id']);
+                if (!$order) {
+                    http_response_code(409);
+                    $error = 'Đơn hàng đã bị hủy hoặc không thể xác nhận.';
+                } else {
+                    redirect('momo-demo.php?order=' . rawurlencode($momoOrderId) . '&request=' . rawurlencode($requestId) . '&success=1');
+                }
+            }
+        }
+
+        $success = $order && $order['payment_status'] === 'paid';
+        $qrPayload = $order ? implode('|', [
+            'MOMO-PAYMENT',
+            'SHOP=LINH-FLORIST',
+            'ORDER=' . $order['order_number'],
+            'AMOUNT=' . (int) $order['total_amount'],
+            'REQUEST=' . $requestId,
+        ]) : '';
+        $this->view('payment/momo-demo', compact('order', 'momoOrderId', 'requestId', 'success', 'error', 'qrPayload') + ['pageTitle' => 'Thanh toán MoMo']);
+    }
+
     public function handleReturn(): void
     {
         $status = 'error';
@@ -22,11 +62,11 @@ final class MomoController extends Controller
                 http_response_code(400);
                 $message = 'Chữ ký phản hồi MoMo không hợp lệ.';
             } else {
-                $order = (new Order())->applyMomoResult($payload, false);
+                $order = (new Order())->applyMomoResult($payload);
                 if (!$order) {
                     http_response_code(404);
                     $message = 'Không tìm thấy đơn hàng tương ứng.';
-                } elseif ((int) ($payload['resultCode'] ?? -1) === 0) {
+                } elseif ($order['payment_status'] === 'paid') {
                     $status = 'success';
                     $orderNumber = (string) $order['order_number'];
                     $message = 'Thanh toán MoMo thành công. Cửa hàng sẽ sớm xác nhận đơn hoa của bạn.';
@@ -52,7 +92,7 @@ final class MomoController extends Controller
                 echo json_encode(['message' => 'Invalid signature']);
                 return;
             }
-            $order = (new Order())->applyMomoResult($payload, true);
+            $order = (new Order())->applyMomoResult($payload);
             if (!$order) {
                 http_response_code(404);
                 echo json_encode(['message' => 'Order not found']);

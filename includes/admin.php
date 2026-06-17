@@ -30,6 +30,7 @@ function admin_status_label(string $status): string
         'paid' => 'Đã thanh toán',
         'refunded' => 'Đã hoàn tiền',
         'cod' => 'Khi nhận hàng',
+        'bank_transfer' => 'Chuyển khoản ngân hàng',
         'momo' => 'MoMo',
         'reversed' => 'Đã thu hồi',
         'disabled' => 'Đã khóa',

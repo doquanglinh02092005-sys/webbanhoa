@@ -6,7 +6,6 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Order;
 use App\Models\User;
-use App\Services\MomoPayment;
 use RuntimeException;
 use Throwable;
 
@@ -19,7 +18,14 @@ final class CheckoutController extends Controller
         $profile = (new User())->find((int) $sessionUser['id']) ?? $sessionUser;
         $errors = [];
         $successOrder = trim((string) ($_GET['success'] ?? ''));
-        $momoEnabled = (bool) momo_config()['enabled'];
+        $bankTransfer = shop_config()['bank_transfer'];
+        $successOrderData = null;
+        if ($successOrder !== '') {
+            $statement = db()->prepare('SELECT order_number,total_amount,payment_method FROM orders WHERE order_number=? AND user_id=? LIMIT 1');
+            $statement->bind_param('si', $successOrder, $sessionUser['id']);
+            $statement->execute();
+            $successOrderData = $statement->get_result()->fetch_assoc() ?: null;
+        }
         $loyaltyVndPerPoint = (int) shop_config()['loyalty_vnd_per_point'];
         $loyaltyRedemptionRate = (int) shop_config()['loyalty_redemption_vnd_per_point'];
         $availablePoints = (int) ($profile['loyalty_points'] ?? 0);
@@ -42,31 +48,17 @@ final class CheckoutController extends Controller
             if (mb_strlen($form['delivery_address']) < 10) $errors[] = 'Địa chỉ giao hoa cần cụ thể hơn.';
             if ($form['customer_email'] !== '' && !filter_var($form['customer_email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Email không hợp lệ.';
             if ($form['delivery_date'] !== '' && $form['delivery_date'] < date('Y-m-d')) $errors[] = 'Ngày giao không thể ở trong quá khứ.';
-            if (!in_array($form['payment_method'], ['cod', 'momo'], true)) $errors[] = 'Phương thức thanh toán không hợp lệ.';
-            if ($form['payment_method'] === 'momo' && !$momoEnabled) $errors[] = 'Thanh toán MoMo chưa được cấu hình. Vui lòng chọn thanh toán khi nhận hàng.';
+            if (!in_array($form['payment_method'], ['cod', 'bank_transfer'], true)) $errors[] = 'Phương thức thanh toán không hợp lệ.';
             if (!$errors) {
                 try {
                     $orders = new Order();
                     $order = $orders->createFromCart((int) $sessionUser['id'], $form, $cart);
-                    if ($form['payment_method'] === 'momo') {
-                        $momoOrderId = $order['order_number'] . '-M-' . strtoupper(bin2hex(random_bytes(3)));
-                        $requestId = 'REQ-' . strtoupper(bin2hex(random_bytes(8)));
-                        $orders->prepareMomoPayment((int) $order['id'], $momoOrderId, $requestId);
-                        try {
-                            $response = (new MomoPayment())->create($order, $form, $momoOrderId, $requestId);
-                            header('Location: ' . $response['payUrl']);
-                            exit;
-                        } catch (Throwable $exception) {
-                            $orders->cancelUnpaidOrder((int) $order['id']);
-                            throw $exception;
-                        }
-                    }
                     redirect('checkout.php?success=' . rawurlencode($order['order_number']));
                 } catch (Throwable $exception) {
                     $errors[] = $exception instanceof RuntimeException ? $exception->getMessage() : 'Không thể tạo đơn hàng. Vui lòng thử lại.';
                 }
             }
         }
-        $this->view('checkout/show', compact('errors', 'successOrder', 'form', 'momoEnabled', 'loyaltyVndPerPoint', 'loyaltyRedemptionRate', 'availablePoints') + ['pageTitle' => 'Đặt hoa']);
+        $this->view('checkout/show', compact('errors', 'successOrder', 'successOrderData', 'bankTransfer', 'form', 'loyaltyVndPerPoint', 'loyaltyRedemptionRate', 'availablePoints') + ['pageTitle' => 'Đặt hoa']);
     }
 }

@@ -4,6 +4,20 @@
   <section class="auth-card auth-message checkout-success">
     <span class="auth-symbol">✓</span><h1>Đặt hoa thành công</h1>
     <p>Mã đơn của bạn là <strong><?= h($successOrder) ?></strong>. Bạn sẽ được cộng điểm sau khi đơn hoàn thành và đã thanh toán.</p>
+    <?php if (($successOrderData['payment_method'] ?? '') === 'bank_transfer'): ?>
+      <div class="bank-transfer-box">
+        <h2>Thông tin chuyển khoản</h2>
+        <p>Vui lòng chuyển khoản đúng số tiền và ghi đúng nội dung để shop xác nhận đơn nhanh hơn.</p>
+        <div class="bank-transfer-grid">
+          <div><span>Ngân hàng</span><strong><?= h($bankTransfer['bank_name']) ?></strong></div>
+          <div><span>Số tài khoản</span><strong data-copy-account><?= h($bankTransfer['account_number']) ?></strong><button type="button" data-copy-value="<?= h($bankTransfer['account_number']) ?>">Copy STK</button></div>
+          <div><span>Chủ tài khoản</span><strong><?= h($bankTransfer['account_name']) ?></strong></div>
+          <div><span>Số tiền</span><strong><?= admin_money($successOrderData['total_amount'] ?? 0) ?></strong></div>
+          <div class="full"><span>Nội dung chuyển khoản</span><strong data-copy-order><?= h($successOrder) ?></strong><button type="button" data-copy-value="<?= h($successOrder) ?>">Copy nội dung</button></div>
+        </div>
+        <small>Đơn hàng sẽ được xử lý sau khi shop xác nhận thanh toán trong tài khoản ngân hàng.</small>
+      </div>
+    <?php endif; ?>
     <a class="auth-primary-link" href="account.php">Xem đơn hàng</a>
   </section>
 <?php else: ?>
@@ -23,7 +37,7 @@
       <div class="payment-section">
         <div class="checkout-panel-heading"><span>02</span><div><h2>Phương thức thanh toán</h2><p>Chọn phương thức phù hợp với bạn.</p></div></div>
         <label class="payment-option"><input type="radio" name="payment_method" value="cod" <?= $form['payment_method'] === 'cod' ? 'checked' : '' ?>><span><strong>Thanh toán khi nhận hàng</strong><small>Trả tiền mặt khi cửa hàng giao hoa.</small></span></label>
-        <label class="payment-option <?= !$momoEnabled ? 'disabled' : '' ?>"><input type="radio" name="payment_method" value="momo" <?= $form['payment_method'] === 'momo' ? 'checked' : '' ?> <?= !$momoEnabled ? 'disabled' : '' ?>><span><strong>Thanh toán trực tuyến qua MoMo</strong><small><?= $momoEnabled ? 'Bạn sẽ được chuyển đến cổng thanh toán bảo mật của MoMo.' : 'Cửa hàng chưa cấu hình tài khoản MoMo.' ?></small></span></label>
+        <label class="payment-option"><input type="radio" name="payment_method" value="bank_transfer" <?= $form['payment_method'] === 'bank_transfer' ? 'checked' : '' ?>><span><strong>Chuyển khoản ngân hàng</strong><small>Sau khi đặt hàng, hệ thống sẽ hiển thị thông tin chuyển khoản. Vui lòng chuyển đúng số tiền và ghi đúng mã đơn hàng trong nội dung chuyển khoản.</small></span></label>
       </div>
     </section>
     <aside class="checkout-panel checkout-summary">
@@ -36,5 +50,5 @@
     </aside>
   </form>
 <?php endif; ?>
-</main><script src="checkout.js"></script>
+</main><script src="checkout.js?v=20260617-bank-transfer"></script>
 <?php require dirname(__DIR__, 3) . '/includes/auth-footer.php'; ?>

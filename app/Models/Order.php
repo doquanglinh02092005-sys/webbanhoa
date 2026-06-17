@@ -9,12 +9,70 @@ use Throwable;
 
 final class Order extends Model
 {
-    public function recentForUser(int $userId, int $limit = 5): array
+    public function recentForUser(int $userId, int $limit = 20): array
     {
         $statement = $this->db->prepare('SELECT id,order_number,total_amount,status,payment_method,payment_status,points_used,points_discount,points_earned,created_at FROM orders WHERE user_id=? ORDER BY created_at DESC LIMIT ?');
         $statement->bind_param('ii', $userId, $limit);
         $statement->execute();
         return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function findForUser(int $id, int $userId): ?array
+    {
+        $statement = $this->db->prepare('SELECT * FROM orders WHERE id=? AND user_id=? LIMIT 1');
+        $statement->bind_param('ii', $id, $userId);
+        $statement->execute();
+        return $statement->get_result()->fetch_assoc() ?: null;
+    }
+
+    public function canCustomerModify(array $order): bool
+    {
+        return ($order['status'] ?? '') === 'pending' && ($order['payment_status'] ?? '') === 'unpaid';
+    }
+
+    public function updateCustomerDelivery(int $id, int $userId, array $data): void
+    {
+        $this->db->begin_transaction();
+        try {
+            $statement = $this->db->prepare('SELECT * FROM orders WHERE id=? AND user_id=? FOR UPDATE');
+            $statement->bind_param('ii', $id, $userId);
+            $statement->execute();
+            $order = $statement->get_result()->fetch_assoc();
+            if (!$order) throw new RuntimeException('Đơn hàng không tồn tại.');
+            if (!$this->canCustomerModify($order)) throw new RuntimeException('Đơn hàng đã được xử lý nên không thể chỉnh sửa thông tin nhận hàng.');
+
+            $statement = $this->db->prepare('UPDATE orders SET customer_name=?,customer_phone=?,delivery_address=?,note=? WHERE id=? AND user_id=?');
+            $statement->bind_param('ssssii', $data['customer_name'], $data['customer_phone'], $data['delivery_address'], $data['note'], $id, $userId);
+            $statement->execute();
+            $this->db->commit();
+        } catch (Throwable $exception) {
+            $this->db->rollback();
+            throw $exception;
+        }
+    }
+
+    public function cancelForCustomer(int $id, int $userId): void
+    {
+        $this->db->begin_transaction();
+        try {
+            $statement = $this->db->prepare('SELECT * FROM orders WHERE id=? AND user_id=? FOR UPDATE');
+            $statement->bind_param('ii', $id, $userId);
+            $statement->execute();
+            $order = $statement->get_result()->fetch_assoc();
+            if (!$order) throw new RuntimeException('Đơn hàng không tồn tại.');
+            if (!$this->canCustomerModify($order)) throw new RuntimeException('Đơn hàng đã được xử lý nên không thể hủy trực tiếp.');
+
+            $this->releaseStock($id, $order);
+            $statement = $this->db->prepare("UPDATE orders SET status='cancelled' WHERE id=? AND user_id=?");
+            $statement->bind_param('ii', $id, $userId);
+            $statement->execute();
+            $this->refundRedeemedPoints($order);
+            $this->syncLoyaltyPoints($order + ['status' => 'cancelled']);
+            $this->db->commit();
+        } catch (Throwable $exception) {
+            $this->db->rollback();
+            throw $exception;
+        }
     }
 
     public function createFromCart(int $userId, array $form, array $cart): array
@@ -30,7 +88,7 @@ final class Order extends Model
             throw new RuntimeException('Giỏ hoa không có sản phẩm hợp lệ.');
         }
 
-        $paymentMethod = in_array($form['payment_method'] ?? '', ['cod', 'momo'], true)
+        $paymentMethod = in_array($form['payment_method'] ?? '', ['cod', 'bank_transfer'], true)
             ? $form['payment_method']
             : 'cod';
         $productModel = new Product($this->db);
@@ -111,12 +169,62 @@ final class Order extends Model
 
     public function prepareMomoPayment(int $id, string $momoOrderId, string $requestId): void
     {
-        $statement = $this->db->prepare('UPDATE orders SET momo_order_id=?,momo_request_id=? WHERE id=? AND payment_method="momo"');
+        $statement = $this->db->prepare('UPDATE orders SET momo_order_id=?,momo_request_id=?,momo_result_code=NULL,momo_message=NULL,momo_pay_url=NULL WHERE id=? AND payment_method="momo"');
         $statement->bind_param('ssi', $momoOrderId, $requestId, $id);
         $statement->execute();
     }
 
-    public function applyMomoResult(array $payload, bool $cancelOnFailure): ?array
+    public function saveMomoPaymentResponse(int $id, string $payUrl, int $resultCode, string $message): void
+    {
+        $message = mb_substr(trim($message), 0, 255);
+        $statement = $this->db->prepare('UPDATE orders SET momo_pay_url=?,momo_result_code=?,momo_message=? WHERE id=? AND payment_method="momo"');
+        $statement->bind_param('sisi', $payUrl, $resultCode, $message, $id);
+        $statement->execute();
+    }
+
+    public function findMomoDemo(string $momoOrderId, string $requestId, int $userId): ?array
+    {
+        $statement = $this->db->prepare('SELECT * FROM orders WHERE momo_order_id=? AND momo_request_id=? AND user_id=? AND payment_method="momo" LIMIT 1');
+        $statement->bind_param('ssi', $momoOrderId, $requestId, $userId);
+        $statement->execute();
+        return $statement->get_result()->fetch_assoc() ?: null;
+    }
+
+    public function confirmMomoDemo(string $momoOrderId, string $requestId, int $userId): ?array
+    {
+        $this->db->begin_transaction();
+        try {
+            $statement = $this->db->prepare('SELECT * FROM orders WHERE momo_order_id=? AND momo_request_id=? AND user_id=? AND payment_method="momo" FOR UPDATE');
+            $statement->bind_param('ssi', $momoOrderId, $requestId, $userId);
+            $statement->execute();
+            $order = $statement->get_result()->fetch_assoc() ?: null;
+            if (!$order || !empty($order['stock_released_at']) || $order['status'] === 'cancelled') {
+                $this->db->rollback();
+                return null;
+            }
+            if ($order['payment_status'] !== 'paid') {
+                $transactionId = date('ymdHis') . str_pad((string) $order['id'], 6, '0', STR_PAD_LEFT);
+                $message = 'Thanh toán MoMo thành công.';
+                $statement = $this->db->prepare("UPDATE orders SET payment_status='paid',paid_at=COALESCE(paid_at,NOW()),payment_reference=?,momo_trans_id=?,momo_result_code=0,momo_message=? WHERE id=?");
+                $statement->bind_param('sssi', $transactionId, $transactionId, $message, $order['id']);
+                $statement->execute();
+                $order['payment_status'] = 'paid';
+                $order['payment_reference'] = $transactionId;
+                $order['momo_trans_id'] = $transactionId;
+                $order['momo_result_code'] = 0;
+                $order['momo_message'] = $message;
+                $order['paid_at'] = $order['paid_at'] ?: date('Y-m-d H:i:s');
+            }
+            $this->syncLoyaltyPoints($order);
+            $this->db->commit();
+            return $order;
+        } catch (Throwable $exception) {
+            $this->db->rollback();
+            throw $exception;
+        }
+    }
+
+    public function applyMomoResult(array $payload): ?array
     {
         $momoOrderId = (string) ($payload['orderId'] ?? '');
         $amount = (int) ($payload['amount'] ?? 0);
@@ -134,22 +242,30 @@ final class Order extends Model
                 $this->db->rollback();
                 return null;
             }
+            if ($requestId === '' || !hash_equals((string) $order['momo_request_id'], $requestId)) {
+                $this->db->rollback();
+                return null;
+            }
+            if ($order['payment_status'] === 'paid' && $resultCode !== 0) {
+                $this->db->commit();
+                return $order;
+            }
+            if ($resultCode === 0 && !empty($order['stock_released_at'])) {
+                $this->db->rollback();
+                return null;
+            }
+
+            $message = mb_substr(trim((string) ($payload['message'] ?? '')), 0, 255);
 
             if ($resultCode === 0) {
-                $statement = $this->db->prepare("UPDATE orders SET payment_status='paid',paid_at=COALESCE(paid_at,NOW()),payment_reference=?,momo_trans_id=NULLIF(?,''),momo_result_code=0,momo_request_id=? WHERE id=?");
-                $statement->bind_param('sssi', $transId, $transId, $requestId, $order['id']);
+                $statement = $this->db->prepare("UPDATE orders SET payment_status='paid',paid_at=COALESCE(paid_at,NOW()),payment_reference=?,momo_trans_id=NULLIF(?,''),momo_result_code=0,momo_message=?,momo_request_id=? WHERE id=?");
+                $statement->bind_param('ssssi', $transId, $transId, $message, $requestId, $order['id']);
                 $statement->execute();
                 $order['payment_status'] = 'paid';
             } else {
-                $statement = $this->db->prepare('UPDATE orders SET momo_result_code=?,momo_request_id=? WHERE id=?');
-                $statement->bind_param('isi', $resultCode, $requestId, $order['id']);
+                $statement = $this->db->prepare('UPDATE orders SET momo_result_code=?,momo_message=?,momo_request_id=? WHERE id=?');
+                $statement->bind_param('issi', $resultCode, $message, $requestId, $order['id']);
                 $statement->execute();
-                if ($cancelOnFailure && $order['status'] === 'pending' && $order['payment_status'] === 'unpaid') {
-                    $this->releaseStock((int) $order['id'], $order);
-                    $this->db->query('UPDATE orders SET status="cancelled" WHERE id=' . (int) $order['id']);
-                    $order['status'] = 'cancelled';
-                    $this->refundRedeemedPoints($order);
-                }
             }
 
             $this->syncLoyaltyPoints($order);
@@ -161,7 +277,7 @@ final class Order extends Model
         }
     }
 
-    public function cancelUnpaidOrder(int $id): void
+    public function cancelUnpaidOrder(int $id, string $message = ''): void
     {
         $this->db->begin_transaction();
         try {
@@ -171,7 +287,10 @@ final class Order extends Model
             $order = $statement->get_result()->fetch_assoc();
             if ($order && $order['payment_status'] === 'unpaid') {
                 $this->releaseStock($id, $order);
-                $this->db->query('UPDATE orders SET status="cancelled" WHERE id=' . $id);
+                $message = mb_substr(trim($message), 0, 255);
+                $statement = $this->db->prepare("UPDATE orders SET status='cancelled',momo_message=NULLIF(?,'') WHERE id=?");
+                $statement->bind_param('si', $message, $id);
+                $statement->execute();
                 $this->refundRedeemedPoints($order);
             }
             $this->db->commit();

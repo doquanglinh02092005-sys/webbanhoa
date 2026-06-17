@@ -67,7 +67,7 @@ function ensure_shop_schema(mysqli $connection): void
         points_used INT UNSIGNED NOT NULL DEFAULT 0,
         points_discount BIGINT UNSIGNED NOT NULL DEFAULT 0,
         total_amount BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        payment_method ENUM('cod', 'momo') NOT NULL DEFAULT 'cod',
+        payment_method ENUM('cod', 'momo', 'bank_transfer') NOT NULL DEFAULT 'cod',
         status ENUM('pending', 'confirmed', 'preparing', 'shipping', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
         payment_status ENUM('unpaid', 'paid', 'refunded') NOT NULL DEFAULT 'unpaid',
         payment_reference VARCHAR(100) NULL,
@@ -75,6 +75,8 @@ function ensure_shop_schema(mysqli $connection): void
         momo_request_id VARCHAR(100) NULL,
         momo_trans_id BIGINT UNSIGNED NULL,
         momo_result_code INT NULL,
+        momo_message VARCHAR(255) NULL,
+        momo_pay_url TEXT NULL,
         points_earned INT UNSIGNED NOT NULL DEFAULT 0,
         points_awarded_at DATETIME NULL,
         paid_at DATETIME NULL,
@@ -89,13 +91,16 @@ function ensure_shop_schema(mysqli $connection): void
 
     shop_add_column_if_missing($connection, 'orders', 'points_used', 'INT UNSIGNED NOT NULL DEFAULT 0 AFTER discount_amount');
     shop_add_column_if_missing($connection, 'orders', 'points_discount', 'BIGINT UNSIGNED NOT NULL DEFAULT 0 AFTER points_used');
-    shop_add_column_if_missing($connection, 'orders', 'payment_method', "ENUM('cod', 'momo') NOT NULL DEFAULT 'cod' AFTER total_amount");
+    shop_add_column_if_missing($connection, 'orders', 'payment_method', "ENUM('cod', 'momo', 'bank_transfer') NOT NULL DEFAULT 'cod' AFTER total_amount");
+    shop_modify_column_if_needed($connection, 'orders', 'payment_method', "ENUM('cod', 'momo', 'bank_transfer') NOT NULL DEFAULT 'cod'", "enum('cod','momo','bank_transfer')");
     shop_add_column_if_missing($connection, 'orders', 'payment_reference', 'VARCHAR(100) NULL AFTER payment_status');
     shop_add_column_if_missing($connection, 'orders', 'momo_order_id', 'VARCHAR(100) NULL AFTER payment_reference');
     shop_add_column_if_missing($connection, 'orders', 'momo_request_id', 'VARCHAR(100) NULL AFTER momo_order_id');
     shop_add_column_if_missing($connection, 'orders', 'momo_trans_id', 'BIGINT UNSIGNED NULL AFTER momo_request_id');
     shop_add_column_if_missing($connection, 'orders', 'momo_result_code', 'INT NULL AFTER momo_trans_id');
-    shop_add_column_if_missing($connection, 'orders', 'points_earned', 'INT UNSIGNED NOT NULL DEFAULT 0 AFTER momo_result_code');
+    shop_add_column_if_missing($connection, 'orders', 'momo_message', 'VARCHAR(255) NULL AFTER momo_result_code');
+    shop_add_column_if_missing($connection, 'orders', 'momo_pay_url', 'TEXT NULL AFTER momo_message');
+    shop_add_column_if_missing($connection, 'orders', 'points_earned', 'INT UNSIGNED NOT NULL DEFAULT 0 AFTER momo_pay_url');
     shop_add_column_if_missing($connection, 'orders', 'points_awarded_at', 'DATETIME NULL AFTER points_earned');
     shop_add_column_if_missing($connection, 'orders', 'paid_at', 'DATETIME NULL AFTER points_awarded_at');
     shop_add_column_if_missing($connection, 'orders', 'stock_released_at', 'DATETIME NULL AFTER paid_at');
@@ -150,6 +155,20 @@ function shop_add_column_if_missing(mysqli $connection, string $table, string $c
     $statement->execute();
     if ((int) $statement->get_result()->fetch_assoc()['total'] === 0) {
         $connection->query("ALTER TABLE `{$table}` ADD COLUMN `{$column}` {$definition}");
+    }
+}
+
+function shop_modify_column_if_needed(mysqli $connection, string $table, string $column, string $definition, string $expectedType): void
+{
+    if (!in_array($table, ['users', 'products', 'orders', 'loyalty_transactions'], true)) {
+        throw new InvalidArgumentException('Bảng migration không hợp lệ.');
+    }
+    $statement = $connection->prepare('SELECT COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?');
+    $statement->bind_param('ss', $table, $column);
+    $statement->execute();
+    $current = strtolower((string) ($statement->get_result()->fetch_assoc()['COLUMN_TYPE'] ?? ''));
+    if ($current !== strtolower($expectedType)) {
+        $connection->query("ALTER TABLE `{$table}` MODIFY COLUMN `{$column}` {$definition}");
     }
 }
 
